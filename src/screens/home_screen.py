@@ -23,6 +23,7 @@ def home_screen():
         st.image("https://i.ibb.co/CsmQQV6X/mascot-prof.png", width=145)
         if st.button("Teacher Portal ↗", key="teacher_btn"):
             st.session_state["login_type"] = "teacher"
+            st.session_state["teacher_login_type"] = "register"
             st.rerun()
 
     footer_home()

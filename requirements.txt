@@ -13,5 +13,7 @@ bcrypt
 
 segno
 pillow
+librosa
+resemblyzer
 
 streamlit 
