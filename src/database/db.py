@@ -13,7 +13,7 @@ def check_pass(pwd: str, hashed: str) -> bool:
         return False
 
 
-# --- TEACHER DATABASE OPERATIONS ---
+# --- TEACHER OPERATIONS ---
 
 
 def check_teacher_exists(username: str) -> bool:
@@ -24,7 +24,7 @@ def check_teacher_exists(username: str) -> bool:
         response = (
             supabase.table("teachers").select("username").eq("username", username).execute()
         )
-        return len(response.data) > 0
+        return len(response.data or []) > 0
     except Exception as e:
         print(f"Error checking teacher exists: {e}")
         return False
@@ -33,11 +33,7 @@ def check_teacher_exists(username: str) -> bool:
 def create_teacher(username: str, password: str, name: str):
     username = (username or "").strip().lower()
     name = (name or "").strip()
-    data = {
-        "username": username,
-        "password": hash_pass(password),
-        "name": name,
-    }
+    data = {"username": username, "password": hash_pass(password), "name": name}
     response = supabase.table("teachers").insert(data).execute()
     return response.data
 
@@ -53,47 +49,11 @@ def teacher_login(username: str, password: str):
             if check_pass(password, teacher.get("password", "")):
                 return teacher
     except Exception as e:
-        print(f"Error in teacher_login: {e}")
+        print(f"Error during teacher login: {e}")
     return None
 
 
-def get_teacher_subjects(teacher_id):
-    try:
-        response = (
-            supabase.table("subjects")
-            .select("*")
-            .eq("teacher_id", teacher_id)
-            .execute()
-        )
-        subjects = response.data or []
-        for s in subjects:
-            if "total_students" not in s:
-                s["total_students"] = 0
-            if "total_classes" not in s:
-                s["total_classes"] = 0
-            if "section" not in s:
-                s["section"] = "A"
-        return subjects
-    except Exception as e:
-        print(f"Error fetching teacher subjects: {e}")
-        return []
-
-
-def get_attendance_for_teacher(teacher_id):
-    try:
-        response = (
-            supabase.table("attendance")
-            .select("*, subjects!inner(*)")
-            .eq("subjects.teacher_id", teacher_id)
-            .execute()
-        )
-        return response.data or []
-    except Exception as e:
-        print(f"Error fetching attendance records: {e}")
-        return []
-
-
-# --- STUDENT DATABASE OPERATIONS ---
+# --- STUDENT OPERATIONS ---
 
 
 def get_all_students():
@@ -105,8 +65,8 @@ def get_all_students():
         return []
 
 
-def create_student(name: str, face_embedding=None, voice_embedding=None):
-    name = (name or "").strip()
+def create_student(new_name: str, face_embedding=None, voice_embedding=None):
+    name = (new_name or "").strip()
     data = {
         "name": name,
         "face_embedding": face_embedding,
@@ -120,7 +80,100 @@ def create_student(name: str, face_embedding=None, voice_embedding=None):
         return None
 
 
-def get_student_subjects(student_id):
+# --- SUBJECT OPERATIONS ---
+
+
+def create_subject(subject_code: str, name: str, section: str, teacher_id: int):
+    data = {
+        "subject_code": (subject_code or "").strip().upper(),
+        "name": (name or "").strip(),
+        "section": (section or "A").strip(),
+        "teacher_id": teacher_id,
+    }
+    response = supabase.table("subjects").insert(data).execute()
+    return response.data
+
+
+def get_teacher_subjects(teacher_id: int):
+    try:
+        response = (
+            supabase.table("subjects")
+            .select("*, subject_students(count), attendance_logs(timestamp)")
+            .eq("teacher_id", teacher_id)
+            .execute()
+        )
+        subjects = response.data or []
+
+        for sub in subjects:
+            sub["total_students"] = (
+                sub.get("subject_students", [{}])[0].get("count", 0)
+                if sub.get("subject_students")
+                else 0
+            )
+            attendance = sub.get("attendance_logs", [])
+            unique_sessions = len(
+                set(log["timestamp"] for log in attendance if log.get("timestamp"))
+            )
+            sub["total_classes"] = unique_sessions
+
+            sub.pop("subject_students", None)
+            sub.pop("attendance_logs", None)
+
+        return subjects
+    except Exception as e:
+        print(f"Error fetching teacher subjects: {e}")
+        return []
+
+
+def enroll_student_to_subject(student_id: int, subject_id: int):
+    data = {"student_id": student_id, "subject_id": subject_id}
+    response = supabase.table("subject_students").insert(data).execute()
+    return response.data
+
+
+def unenroll_student_to_subject(student_id: int, subject_id: int):
+    response = (
+        supabase.table("subject_students")
+        .delete()
+        .eq("student_id", student_id)
+        .eq("subject_id", subject_id)
+        .execute()
+    )
+    return response.data
+
+
+def enroll_student_in_subject(student_id: int, subject_code: str):
+    subject_code = (subject_code or "").strip().upper()
+    try:
+        sub_res = (
+            supabase.table("subjects")
+            .select("*")
+            .eq("subject_code", subject_code)
+            .execute()
+        )
+        if not sub_res.data:
+            return False, f"Subject with code '{subject_code}' not found."
+
+        subject = sub_res.data[0]
+        subject_id = subject["subject_id"]
+
+        existing = (
+            supabase.table("subject_students")
+            .select("*")
+            .eq("student_id", student_id)
+            .eq("subject_id", subject_id)
+            .execute()
+        )
+        if existing.data:
+            return False, f"Already enrolled in {subject.get('name', subject_code)}."
+
+        enroll_student_to_subject(student_id, subject_id)
+        return True, f"Successfully enrolled in {subject.get('name', subject_code)}!"
+    except Exception as e:
+        return False, f"Enrollment error: {str(e)}"
+
+
+def get_student_subjects(student_id: int):
     try:
         response = (
             supabase.table("subject_students")
@@ -134,11 +187,25 @@ def get_student_subjects(student_id):
         return []
 
 
-def get_student_attendance(student_id):
+# --- ATTENDANCE OPERATIONS ---
+
+
+def create_attendance(logs: list):
+    if not logs:
+        return []
+    try:
+        response = supabase.table("attendance_logs").insert(logs).execute()
+        return response.data
+    except Exception as e:
+        print(f"Error creating attendance logs: {e}")
+        return []
+
+
+def get_student_attendance(student_id: int):
     try:
         response = (
-            supabase.table("attendance")
-            .select("*")
+            supabase.table("attendance_logs")
+            .select("*, subjects(*)")
             .eq("student_id", student_id)
             .execute()
         )
@@ -148,41 +215,15 @@ def get_student_attendance(student_id):
         return []
 
 
-def unenroll_student_to_subject(student_id, subject_id):
+def get_attendance_for_teacher(teacher_id: int):
     try:
-        supabase.table("subject_students").delete().eq("student_id", student_id).eq("subject_id", subject_id).execute()
-        return True
-    except Exception as e:
-        print(f"Error unenrolling student: {e}")
-        return False
-
-
-def enroll_student_in_subject(student_id, subject_code: str):
-    subject_code = (subject_code or "").strip().upper()
-    try:
-        sub_res = supabase.table("subjects").select("*").eq("subject_code", subject_code).execute()
-        if not sub_res.data:
-            return False, f"Subject with code '{subject_code}' not found."
-
-        subject = sub_res.data[0]
-        subject_id = subject["subject_id"]
-
-        # Check if already enrolled
-        existing = (
-            supabase.table("subject_students")
-            .select("*")
-            .eq("student_id", student_id)
-            .eq("subject_id", subject_id)
+        response = (
+            supabase.table("attendance_logs")
+            .select("*, subjects!inner(*)")
+            .eq("subjects.teacher_id", teacher_id)
             .execute()
         )
-        if existing.data:
-            return False, f"Already enrolled in {subject.get('name', subject_code)}."
-
-        supabase.table("subject_students").insert({
-            "student_id": student_id,
-            "subject_id": subject_id,
-        }).execute()
-
-        return True, f"Successfully enrolled in {subject.get('name', subject_code)}!"
+        return response.data or []
     except Exception as e:
-        return False, f"Enrollment error: {str(e)}"
+        print(f"Error fetching teacher attendance logs: {e}")
+        return []

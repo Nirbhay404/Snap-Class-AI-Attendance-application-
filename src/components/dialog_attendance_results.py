@@ -1,19 +1,32 @@
 import streamlit as st
-from src.database.config import supabase
+from src.database.db import create_attendance
 
 
-@st.dialog("Attendance Results")
-def attendance_result_dialog(results_df, attendance_to_log):
-    st.write("Scan complete. Review student attendance before saving.")
+def show_attendance_result(df, logs):
+    st.write("Please review attendance before confirming.")
+    st.dataframe(df, hide_index=True, use_container_width=True)
 
-    st.dataframe(results_df, use_container_width=True, hide_index=True)
+    col1, col2 = st.columns(2, gap="medium", vertical_alignment="center")
 
-    if st.button("Save Attendance Records", type="primary", use_container_width=True):
-        try:
-            if attendance_to_log:
-                supabase.table("attendance").insert(attendance_to_log).execute()
-            st.success("Attendance successfully saved to database!")
+    with col1:
+        if st.button("🗑️ Discard", type="tertiary", use_container_width=True):
+            st.session_state.voice_attendance_results = None
             st.session_state.attendance_images = []
             st.rerun()
-        except Exception as e:
-            st.error(f"Error saving attendance: {str(e)}")
+
+    with col2:
+        if st.button("💾 Confirm & Save", use_container_width=True, type="primary"):
+            try:
+                if logs:
+                    create_attendance(logs)
+                st.toast("Attendance successfully recorded!", icon="✅")
+                st.session_state.attendance_images = []
+                st.session_state.voice_attendance_results = None
+                st.rerun()
+            except Exception as e:
+                st.error(f"Sync failed: {e}")
+
+
+@st.dialog("Attendance Reports")
+def attendance_result_dialog(df, logs):
+    show_attendance_result(df, logs)
