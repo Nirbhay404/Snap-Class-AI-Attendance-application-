@@ -130,99 +130,6 @@ def style_background_dashboard():
                 transform: none !important;
             }
 
-            /* Input labels */
-            div[data-testid="stTextInput"] label, 
-            div[data-testid="stTextInput"] [data-testid="stWidgetLabel"] p {
-                color: #1A1C24 !important;
-                font-family: 'Outfit', sans-serif !important;
-                font-size: 0.95rem !important;
-                font-weight: 600 !important;
-                margin-bottom: 0.35rem !important;
-            }
-
-            /* Input container - single unified box with no inner nesting */
-            div[data-testid="stTextInputRootElement"],
-            div[data-testid="stTextInput"] div[data-baseweb="base-input"] {
-                border: none !important;
-                background: transparent !important;
-                box-shadow: none !important;
-                padding: 0 !important;
-            }
-
-            /* The single crisp input box */
-            div[data-testid="stTextInput"] div[data-baseweb="input"] {
-                background-color: #F7F8FC !important;
-                background: #F7F8FC !important;
-                border: 1.5px solid rgba(195, 208, 240, 0.8) !important;
-                border-radius: 8px !important;
-                min-height: 48px !important;
-                padding: 0 4px 0 14px !important;
-                display: flex !important;
-                align-items: center !important;
-                box-shadow: none !important;
-                transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease !important;
-            }
-
-            /* Focused input: Pink outline matching user screenshot */
-            div[data-testid="stTextInput"] div[data-baseweb="input"]:focus-within {
-                border: 1.5px solid #EE4989 !important;
-                background-color: #FFFFFF !important;
-                background: #FFFFFF !important;
-                box-shadow: 0 0 0 1px #EE4989 !important;
-            }
-
-            div[data-testid="stTextInput"] input {
-                background-color: transparent !important;
-                background: transparent !important;
-                color: #1A1C24 !important;
-                font-family: 'Outfit', sans-serif !important;
-                font-size: 1.05rem !important;
-                font-weight: 500 !important;
-                border: none !important;
-                outline: none !important;
-                box-shadow: none !important;
-                padding: 0 !important;
-            }
-
-            div[data-testid="stTextInput"] input::placeholder {
-                color: #8F97AB !important;
-                opacity: 1 !important;
-                font-family: 'Outfit', sans-serif !important;
-            }
-
-            /* Password toggle eye pill button */
-            div[data-testid="stTextInput"] button[aria-label*="password"],
-            div[data-testid="stTextInput"] button[data-testid*="PasswordToggle"],
-            div[data-testid="stTextInput"] button[aria-label="Show password"],
-            div[data-testid="stTextInput"] button[aria-label="Hide password"] {
-                background-color: #5865F2 !important;
-                color: #FFFFFF !important;
-                border-radius: 9999px !important;
-                height: 32px !important;
-                min-width: 52px !important;
-                border: none !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                box-shadow: 0 2px 8px rgba(88, 101, 242, 0.3) !important;
-                cursor: pointer !important;
-                margin-right: 4px !important;
-                transition: background-color 0.2s ease, transform 0.15s ease !important;
-            }
-
-            div[data-testid="stTextInput"] button[aria-label*="password"]:hover,
-            div[data-testid="stTextInput"] button[data-testid*="PasswordToggle"]:hover {
-                background-color: #4351d8 !important;
-                transform: scale(1.04) !important;
-            }
-
-            div[data-testid="stTextInput"] button[aria-label*="password"] svg,
-            div[data-testid="stTextInput"] button[data-testid*="PasswordToggle"] svg {
-                fill: #FFFFFF !important;
-                stroke: #FFFFFF !important;
-                color: #FFFFFF !important;
-            }
-
             /* Climate Crisis Display Titles */
             .climate-title,
             h2.climate-title {
@@ -341,6 +248,176 @@ def style_base_layout():
                 transform: scale(1.03) !important;
             }
 
+            /* Unified Modern Input Styling - Clean Rounded Pill Card Containers */
+            div[data-testid="stTextInput"],
+            div[data-testid="stNumberInput"],
+            div[data-testid="stTextArea"],
+            div[data-testid="stSelectbox"] {
+                width: 100% !important;
+                margin-bottom: 0.85rem !important;
+            }
+
+            /* Input Labels across the entire app */
+            div[data-testid="stTextInput"] label, 
+            div[data-testid="stTextInput"] [data-testid="stWidgetLabel"] p,
+            div[data-testid="stNumberInput"] label,
+            div[data-testid="stNumberInput"] [data-testid="stWidgetLabel"] p,
+            div[data-testid="stTextArea"] label,
+            div[data-testid="stTextArea"] [data-testid="stWidgetLabel"] p,
+            div[data-testid="stSelectbox"] label,
+            div[data-testid="stSelectbox"] [data-testid="stWidgetLabel"] p,
+            div[data-testid="stModal"] label,
+            div[data-testid="stModal"] [data-testid="stWidgetLabel"] p {
+                color: #1A1C24 !important;
+                font-family: 'Outfit', sans-serif !important;
+                font-size: 0.95rem !important;
+                font-weight: 600 !important;
+                margin-bottom: 0.4rem !important;
+                letter-spacing: -0.2px !important;
+            }
+
+            /* Single Outer Rounded Card Container for all inputs */
+            div[data-testid="stTextInputRootElement"],
+            div[data-testid="stNumberInputRootElement"],
+            div[data-testid="stTextAreaRootElement"],
+            div[data-testid="stTextInput"] div[data-baseweb="base-input"],
+            div[data-testid="stNumberInput"] div[data-baseweb="base-input"],
+            div[data-testid="stTextArea"] div[data-baseweb="base-input"],
+            div[data-testid="stSelectbox"] div[data-baseweb="select"] > div {
+                background-color: #FFFFFF !important;
+                background: #FFFFFF !important;
+                border: 1.5px solid rgba(210, 220, 245, 0.85) !important;
+                border-radius: 14px !important;
+                min-height: 50px !important;
+                padding: 0 8px 0 16px !important;
+                display: flex !important;
+                align-items: center !important;
+                box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03) !important;
+                transition: border-color 0.18s ease, background-color 0.18s ease, box-shadow 0.18s ease !important;
+                overflow: hidden !important;
+            }
+
+            /* Focused state highlight */
+            div[data-testid="stTextInputRootElement"]:focus-within,
+            div[data-testid="stNumberInputRootElement"]:focus-within,
+            div[data-testid="stTextAreaRootElement"]:focus-within,
+            div[data-testid="stTextInput"] div[data-baseweb="base-input"]:focus-within,
+            div[data-testid="stNumberInput"] div[data-baseweb="base-input"]:focus-within,
+            div[data-testid="stSelectbox"] div[data-baseweb="select"] > div:focus-within {
+                border-color: #5865F2 !important;
+                box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.2) !important;
+                background-color: #FFFFFF !important;
+            }
+
+            /* Strip inner wrappers to avoid double boxes or background collisions */
+            div[data-testid="stTextInputRootElement"] div[data-baseweb="base-input"],
+            div[data-testid="stTextInputRootElement"] div[data-baseweb="input"],
+            div[data-testid="stNumberInputRootElement"] div[data-baseweb="base-input"],
+            div[data-testid="stNumberInputRootElement"] div[data-baseweb="input"],
+            div[data-testid="stTextAreaRootElement"] div[data-baseweb="base-input"],
+            div[data-testid="stTextAreaRootElement"] div[data-baseweb="textarea"] {
+                background-color: transparent !important;
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                width: 100% !important;
+                display: flex !important;
+                align-items: center !important;
+            }
+
+            /* Clean typography inside input fields */
+            div[data-testid="stTextInputRootElement"] input,
+            div[data-testid="stNumberInputRootElement"] input,
+            div[data-testid="stTextAreaRootElement"] textarea,
+            div[data-testid="stTextInput"] input,
+            div[data-testid="stNumberInput"] input {
+                background-color: transparent !important;
+                background: transparent !important;
+                color: #1A1C24 !important;
+                font-family: 'Outfit', sans-serif !important;
+                font-size: 1.05rem !important;
+                font-weight: 500 !important;
+                border: none !important;
+                outline: none !important;
+                box-shadow: none !important;
+                padding: 6px 0 !important;
+                width: 100% !important;
+                height: 100% !important;
+            }
+
+            div[data-testid="stTextInputRootElement"] input:focus,
+            div[data-testid="stNumberInputRootElement"] input:focus,
+            div[data-testid="stTextAreaRootElement"] textarea:focus,
+            div[data-testid="stTextInput"] input:focus {
+                outline: none !important;
+                border: none !important;
+                box-shadow: none !important;
+            }
+
+            /* Input placeholder styling */
+            div[data-testid="stTextInputRootElement"] input::placeholder,
+            div[data-testid="stNumberInputRootElement"] input::placeholder,
+            div[data-testid="stTextAreaRootElement"] textarea::placeholder,
+            div[data-testid="stTextInput"] input::placeholder {
+                color: #8F97AB !important;
+                opacity: 0.9 !important;
+                font-family: 'Outfit', sans-serif !important;
+                font-weight: 400 !important;
+            }
+
+            /* Password toggle eye button styled as blue pill button inside input */
+            div[data-testid="stTextInputRootElement"] button,
+            div[data-testid="stTextInput"] button[aria-label*="password"],
+            div[data-testid="stTextInput"] button[aria-label="Show password"],
+            div[data-testid="stTextInput"] button[aria-label="Hide password"],
+            div[data-testid="stTextInput"] button[data-testid*="PasswordToggle"] {
+                background-color: #5865F2 !important;
+                color: #FFFFFF !important;
+                border-radius: 9999px !important;
+                height: 34px !important;
+                min-height: 34px !important;
+                max-height: 34px !important;
+                width: 52px !important;
+                min-width: 52px !important;
+                max-width: 52px !important;
+                border: none !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                box-shadow: 0 2px 6px rgba(88, 101, 242, 0.35) !important;
+                cursor: pointer !important;
+                margin: 0 2px 0 8px !important;
+                padding: 0 !important;
+                transition: background-color 0.2s ease, transform 0.15s ease !important;
+            }
+
+            div[data-testid="stTextInputRootElement"] button:hover,
+            div[data-testid="stTextInput"] button[aria-label*="password"]:hover,
+            div[data-testid="stTextInput"] button[data-testid*="PasswordToggle"]:hover {
+                background-color: #4351d8 !important;
+                transform: scale(1.05) !important;
+            }
+
+            div[data-testid="stTextInputRootElement"] button svg,
+            div[data-testid="stTextInput"] button[aria-label*="password"] svg,
+            div[data-testid="stTextInput"] button[data-testid*="PasswordToggle"] svg {
+                fill: #FFFFFF !important;
+                stroke: #FFFFFF !important;
+                color: #FFFFFF !important;
+                width: 18px !important;
+                height: 18px !important;
+            }
+
+            /* Soft light card styling inside modal dialogs */
+            div[data-testid="stModal"] div[data-testid="stTextInputRootElement"],
+            div[data-testid="stModal"] div[data-testid="stNumberInputRootElement"],
+            div[data-testid="stModal"] div[data-testid="stTextAreaRootElement"] {
+                background-color: #F8F9FD !important;
+                background: #F8F9FD !important;
+                border: 1.5px solid rgba(210, 220, 245, 0.95) !important;
+            }
+
             /* Modal and Dialog Window Balance and Orientation */
             div[data-testid="stModal"],
             div[role="dialog"] {
@@ -379,9 +456,19 @@ def style_base_layout():
                 min-height: auto !important;
             }
 
-            div[data-testid="stModal"] button {
+            div[data-testid="stModal"] button:not([aria-label="Close"]):not([aria-label*="password"]):not([data-testid*="PasswordToggle"]) {
                 width: 100% !important;
                 min-height: 44px !important;
+            }
+
+            /* Modal close button */
+            div[data-testid="stModal"] button[aria-label="Close"] {
+                width: auto !important;
+                min-height: auto !important;
+                background: transparent !important;
+                color: #64748B !important;
+                padding: 4px !important;
+                box-shadow: none !important;
             }
 
             /* Full Coverage Camera Viewfinder */
