@@ -1,7 +1,8 @@
-streamlit 
+streamlit
 # utilities
 numpy
 pandas
+toml
 
 # FACE RECOGNITION
 scikit-learn
@@ -16,4 +17,3 @@ segno
 pillow
 librosa
 resemblyzer
-

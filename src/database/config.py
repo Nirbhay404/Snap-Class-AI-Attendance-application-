@@ -1,7 +1,16 @@
 import os
 import streamlit as st
-import toml
 from supabase import create_client, Client
+
+# Use Python 3.11+ built-in tomllib, fallback to toml if available
+try:
+    import tomllib
+except ModuleNotFoundError:
+    try:
+        import toml as tomllib
+    except ModuleNotFoundError:
+        tomllib = None
+
 
 def get_supabase_credentials():
     # 1. Try Streamlit secrets
@@ -20,16 +29,20 @@ def get_supabase_credentials():
     for p in candidate_paths:
         if os.path.exists(p):
             try:
-                data = toml.load(p)
-                if "SUPABASE_URL" in data and "SUPABASE_KEY" in data:
-                    return data["SUPABASE_URL"], data["SUPABASE_KEY"]
+                if tomllib is not None:
+                    # tomllib expects binary mode; toml handles binary or text
+                    with open(p, "rb") as f:
+                        data = tomllib.load(f)
+                    if "SUPABASE_URL" in data and "SUPABASE_KEY" in data:
+                        return data["SUPABASE_URL"], data["SUPABASE_KEY"]
             except Exception:
                 pass
 
-    # 3. Environment variables or defaults
+    # 3. Environment variables or fallback defaults
     url = os.getenv("SUPABASE_URL", "https://pgwaxqzfmquvrrqdnwyx.supabase.co")
     key = os.getenv("SUPABASE_KEY", "sb_publishable_N1dOVh0qNIk632AN1AEkmA_-wQTeOYh")
     return url, key
+
 
 url, key = get_supabase_credentials()
 supabase: Client = create_client(url, key)
