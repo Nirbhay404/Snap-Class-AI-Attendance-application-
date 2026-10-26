@@ -130,6 +130,10 @@ def student_screen():
         unsafe_allow_html=True,
     )
 
+    join_code = st.query_params.get("join-code") or st.query_params.get("join_code")
+    if join_code:
+        st.info(f"🔗 Joining Class **{join_code.strip().upper()}** — Please verify your face or register below to complete your enrollment.")
+
     show_registration = False
     photo_source = st.camera_input("Position your face in the center")
 

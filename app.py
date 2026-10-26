@@ -54,13 +54,16 @@ def main():
         case None:
             home_screen()
 
-    join_code = st.query_params.get("join-code")
+    join_code = st.query_params.get("join-code") or st.query_params.get("join_code")
     if join_code:
-        if st.session_state.get("login_type") != "student":
-            st.session_state["login_type"] = "student"
-            st.rerun()
-        if st.session_state.get("is_logged_in") and st.session_state.get("user_role") == "student":
-            auto_enroll_dialog(join_code)
+        if st.session_state.get("user_role") == "teacher" and st.session_state.get("is_logged_in"):
+            st.info(f"💡 You are currently logged in as a teacher. To enroll in class **{join_code}**, open this link in an incognito window or log out.")
+        else:
+            if st.session_state.get("login_type") != "student":
+                st.session_state["login_type"] = "student"
+                st.rerun()
+            if st.session_state.get("is_logged_in") and st.session_state.get("user_role") == "student":
+                auto_enroll_dialog(join_code)
 
 
 if __name__ == "__main__":

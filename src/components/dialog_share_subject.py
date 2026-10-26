@@ -3,10 +3,38 @@ import segno
 import streamlit as st
 
 
+def get_app_base_url() -> str:
+    """Dynamically determine the current running base URL (local dev or Streamlit Cloud deployment)."""
+    # 1. Custom configured base URL or domain in secrets.toml (if provided)
+    try:
+        if "APP_URL" in st.secrets:
+            return st.secrets["APP_URL"].rstrip("/")
+        if "APP_DOMAIN" in st.secrets:
+            domain = st.secrets["APP_DOMAIN"].strip("/")
+            proto = "http" if "localhost" in domain or "127.0.0.1" in domain else "https"
+            return f"{proto}://{domain}"
+    except Exception:
+        pass
+
+    # 2. Extract host from active browser request headers
+    try:
+        if hasattr(st, "context") and hasattr(st.context, "headers"):
+            headers = st.context.headers
+            host = headers.get("host") or headers.get("Host")
+            if host:
+                proto = headers.get("x-forwarded-proto") or ("https" if "streamlit.app" in host else "http")
+                return f"{proto}://{host}".rstrip("/")
+    except Exception:
+        pass
+
+    # 3. Fallback to user's real Streamlit Cloud deployment URL
+    return "https://nirbhay404-snap-class-ai-attendance-application--app-lpyli0.streamlit.app"
+
+
 @st.dialog("Share Class Link")
 def share_subject_dialog(subject_name: str, subject_code: str):
-    app_domain = "snapclass-main.streamlit.app"
-    join_url = f"https://{app_domain}/?join-code={subject_code}"
+    base_url = get_app_base_url()
+    join_url = f"{base_url}/?join-code={subject_code}"
 
     badge_html = (
         f'<div style="margin-bottom: 1rem;">'

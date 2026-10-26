@@ -6,6 +6,7 @@ from src.database.config import supabase
 
 @st.dialog("Quick Enrollment")
 def auto_enroll_dialog(subject_code: str):
+    code = (subject_code or "").strip().upper()
     student_data = st.session_state.get("student_data")
     if not student_data:
         st.error("Student session not found. Please log in first.")
@@ -20,7 +21,7 @@ def auto_enroll_dialog(subject_code: str):
         res = (
             supabase.table("subjects")
             .select("subject_id, name")
-            .eq("subject_code", subject_code)
+            .eq("subject_code", code)
             .execute()
         )
     except Exception as e:
