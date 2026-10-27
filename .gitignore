@@ -12,3 +12,7 @@ __pycache__/
 
 .streamlit/
 dist/
+# Local secrets and databases
+streamlit/secrets.toml
+.env
+data/*.db

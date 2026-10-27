@@ -47,6 +47,7 @@ def teacher_login(username: str, password: str):
         if response.data:
             teacher = response.data[0]
             if check_pass(password, teacher.get("password", "")):
+                teacher.pop("password", None)  # keep the hash out of the session
                 return teacher
     except Exception as e:
         print(f"Error during teacher login: {e}")
@@ -65,6 +66,17 @@ def get_all_students():
         return []
 
 
+def get_student_by_id(student_id: int):
+    try:
+        response = (
+            supabase.table("students").select("*").eq("student_id", student_id).execute()
+        )
+        return response.data[0] if response.data else None
+    except Exception as e:
+        print(f"Error fetching student: {e}")
+        return None
+
+
 def create_student(new_name: str, face_embedding=None, voice_embedding=None):
     name = (new_name or "").strip()
     data = {
@@ -81,6 +93,21 @@ def create_student(new_name: str, face_embedding=None, voice_embedding=None):
 
 
 # --- SUBJECT OPERATIONS ---
+
+
+def subject_code_exists(subject_code: str) -> bool:
+    subject_code = (subject_code or "").strip().upper()
+    try:
+        response = (
+            supabase.table("subjects")
+            .select("subject_id")
+            .eq("subject_code", subject_code)
+            .execute()
+        )
+        return len(response.data or []) > 0
+    except Exception as e:
+        print(f"Error checking subject code: {e}")
+        return False
 
 
 def create_subject(subject_code: str, name: str, section: str, teacher_id: int):
