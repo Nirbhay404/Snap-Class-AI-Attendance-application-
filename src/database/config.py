@@ -1,3 +1,5 @@
+import base64
+import json
 import os
 import streamlit as st
 from supabase import create_client, Client
@@ -38,11 +40,36 @@ def get_supabase_credentials():
             except Exception:
                 pass
 
-    # 3. Environment variables or fallback defaults
-    url = os.getenv("SUPABASE_URL", "https://pgwaxqzfmquvrrqdnwyx.supabase.co")
-    key = os.getenv("SUPABASE_KEY", "sb_publishable_N1dOVh0qNIk632AN1AEkmA_-wQTeOYh")
-    return url, key
+    # 3. Environment variables (no hardcoded defaults: credentials must never live in the repo)
+    return os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY")
 
 
 url, key = get_supabase_credentials()
+
+if not url or not key:
+    raise RuntimeError(
+        "Supabase credentials are missing. Set SUPABASE_URL and SUPABASE_KEY in "
+        ".streamlit/secrets.toml (local) or in the app's Secrets settings (Streamlit Cloud). "
+        "See SECURITY_SETUP.md."
+    )
+
+def _is_public_key(api_key: str) -> bool:
+    if api_key.startswith("sb_publishable_"):
+        return True
+    if api_key.startswith("sb_secret_"):
+        return False
+    try:  # legacy JWT keys carry their role in the payload
+        payload = api_key.split(".")[1]
+        payload += "=" * (-len(payload) % 4)
+        return json.loads(base64.urlsafe_b64decode(payload)).get("role") == "anon"
+    except Exception:
+        return False
+
+
+if _is_public_key(key):
+    # Publishable/anon keys are visible to anyone, so with Row Level Security on they cannot reach the data.
+    print(
+        "WARNING: SUPABASE_KEY looks like a publishable/anon key. Use the secret/service-role key "
+        "(see SECURITY_SETUP.md), otherwise the app breaks once Row Level Security is enabled."
+    )
 supabase: Client = create_client(url, key)
