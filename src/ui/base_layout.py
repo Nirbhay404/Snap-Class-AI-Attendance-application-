@@ -186,9 +186,22 @@ def style_base_layout():
         @import url('https://fonts.googleapis.com/css2?family=Climate+Crisis:YEAR@1979&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 
-            /* Hide default Streamlit top bar, header, and footer */
+            /* Hide default Streamlit top bar, header, footer, and viewer badge */
             #MainMenu, footer, header {
                 visibility: hidden;
+            }
+
+            /* Hide Streamlit Community Cloud viewer badge and profile avatar */
+            .viewerBadge_container__1QSob,
+            .viewerBadge_link__1QSob,
+            [data-testid="stViewerBadge"],
+            [class*="viewerBadge"],
+            [data-testid="manage-app-button"],
+            [data-testid="stStatusWidget"] {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                pointer-events: none !important;
             }
                 
             .block-container {
