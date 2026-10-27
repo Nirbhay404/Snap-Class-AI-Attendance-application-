@@ -10,7 +10,7 @@ __pycache__/
 .DS_Store
 .vscode/
 
-.streamlit/
+.streamlit/secrets.toml
 dist/
 # Local secrets and databases
 streamlit/secrets.toml

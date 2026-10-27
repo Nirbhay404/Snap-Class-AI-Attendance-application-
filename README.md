@@ -51,9 +51,9 @@ snapclass/
 │
 ├── .devcontainer/              # Dev container / Codespaces setup (Python 3.11)
 │
-├── .streamlit/                 # Local only (git-ignored)
-│   ├── config.toml             # Streamlit theme
-│   └── secrets.toml            # Supabase credentials (SUPABASE_URL, SUPABASE_KEY)
+├── .streamlit/
+│   ├── config.toml             # Streamlit theme and toolbar settings
+│   └── secrets.toml            # Supabase credentials (git-ignored; never commit)
 │
 ├── supabase/
 │   └── enable_rls.sql          # Turns on Row Level Security for all tables
