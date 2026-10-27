@@ -1,4 +1,7 @@
 import io
+from html import escape
+from urllib.parse import quote
+
 import segno
 import streamlit as st
 
@@ -34,12 +37,12 @@ def get_app_base_url() -> str:
 @st.dialog("Share Class Link")
 def share_subject_dialog(subject_name: str, subject_code: str):
     base_url = get_app_base_url()
-    join_url = f"{base_url}/?join-code={subject_code}"
+    join_url = f"{base_url}/?join-code={quote(subject_code)}"
 
     badge_html = (
         f'<div style="margin-bottom: 1rem;">'
         f'<span style="background: #E0E3FF; color: #5865F2; padding: 4px 12px; border-radius: 9999px; font-weight: 600; font-size: 0.9rem;">'
-        f'Course: {subject_name}'
+        f'Course: {escape(subject_name)}'
         f'</span>'
         f'</div>'
     )

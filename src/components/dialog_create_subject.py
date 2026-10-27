@@ -1,6 +1,6 @@
 import time
 import streamlit as st
-from src.database.db import create_subject
+from src.database.db import create_subject, subject_code_exists
 
 
 @st.dialog("Create New Subject")
@@ -12,6 +12,9 @@ def create_subject_dialog(teacher_id: int):
 
     if st.button("Create Subject Now", type="primary", use_container_width=True):
         if sub_id and sub_name and sub_section:
+            if subject_code_exists(sub_id):
+                st.error(f"Subject code '{sub_id.strip().upper()}' is already in use. Please choose another.")
+                return
             try:
                 create_subject(
                     sub_id.strip().upper(),

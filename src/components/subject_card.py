@@ -1,14 +1,18 @@
+from html import escape
+
 import streamlit as st
 
 
 def subject_card(name, code, section, stats=None, footer_callback=None):
+    # Subject details are typed by teachers and shown to students, so escape before injecting as HTML.
+    name, code, section = escape(str(name)), escape(str(code)), escape(str(section))
     stats_pills = ""
     if stats:
         pills = []
         for icon, label, value in stats:
             pills.append(
                 f'<span style="background: rgba(235, 69, 158, 0.12); color: #1e293b; padding: 6px 14px; border-radius: 12px; font-size: 0.88rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">'
-                f'{icon} <b>{value}</b> {label}'
+                f'{icon} <b>{escape(str(value))}</b> {escape(str(label))}'
                 f'</span>'
             )
         stats_pills = f'<div style="margin-top: 14px; margin-bottom: 16px; display: flex; flex-wrap: wrap; gap: 8px;">{"".join(pills)}</div>'

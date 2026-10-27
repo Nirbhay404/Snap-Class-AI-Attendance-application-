@@ -9,7 +9,7 @@ from src.components.footer import footer_dashboard
 from src.components.dialog_enroll import enroll_dialog
 from src.components.subject_card import subject_card
 from src.database.db import (
-    get_all_students,
+    get_student_by_id,
     create_student,
     get_student_subjects,
     get_student_attendance,
@@ -150,11 +150,7 @@ def student_screen():
             else:
                 if detected:
                     student_id = list(detected.keys())[0]
-                    all_students = get_all_students()
-                    student = next(
-                        (s for s in all_students if s.get("student_id") == student_id),
-                        None,
-                    )
+                    student = get_student_by_id(student_id)
 
                     if student:
                         st.session_state.is_logged_in = True

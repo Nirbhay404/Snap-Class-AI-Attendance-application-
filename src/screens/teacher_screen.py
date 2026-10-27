@@ -2,7 +2,6 @@ from datetime import datetime
 import time
 import numpy as np
 import pandas as pd
-from PIL import Image
 import streamlit as st
 
 from src.ui.base_layout import style_background_dashboard, style_base_layout
@@ -56,6 +55,10 @@ def register_teacher(teacher_username, teacher_name, teacher_pass, teacher_pass_
 
     if not username or not name or not teacher_pass:
         return False, "All fields are required!"
+    if len(username) < 3:
+        return False, "Username must be at least 3 characters long."
+    if len(teacher_pass) < 6:
+        return False, "Password must be at least 6 characters long."
     if check_teacher_exists(username):
         return False, f"Username '{username}' is already taken."
     if teacher_pass != teacher_pass_confirm:
@@ -327,11 +330,11 @@ def teacher_tab_manage_subjects():
             sub_name = sub.get("name", "Subject")
             sub_code = sub.get("subject_code", "N/A")
 
-            def make_share_callback(curr_name=sub_name, curr_code=sub_code):
+            def make_share_callback(curr_name=sub_name, curr_code=sub_code, idx=i):
                 def share_btn():
                     if st.button(
                         f"🔗 Share Code ({curr_code})",
-                        key=f"share_{curr_code}_{i}",
+                        key=f"share_{curr_code}_{idx}",
                         type="secondary",
                         use_container_width=True,
                     ):
