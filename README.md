@@ -128,10 +128,10 @@ pip install -r requirements.txt
 ```
 
 ### 5. Configure Supabase Credentials
-Create a `.streamlit/secrets.toml` file in the root directory:
+Create a `.streamlit/secrets.toml` file in the root directory (the app refuses to start without credentials; see [SECURITY_SETUP.md](SECURITY_SETUP.md) for how to lock down the database):
 ```toml
 SUPABASE_URL = "https://your-project-id.supabase.co"
-SUPABASE_KEY = "your-supabase-anon-or-service-role-key"
+SUPABASE_KEY = "your-supabase-secret-key"   # sb_secret_... (never the publishable/anon key)
 
 # Optional: explicitly set base URL for generated share links
 # APP_URL = "https://your-domain.streamlit.app"
@@ -175,7 +175,7 @@ http://localhost:5002
 4. Add your secrets under **App Settings → Secrets**:
    ```toml
    SUPABASE_URL = "https://your-project.supabase.co"
-   SUPABASE_KEY = "your-supabase-key"
+   SUPABASE_KEY = "your-supabase-secret-key"
    ```
 5. Deploy!
 
